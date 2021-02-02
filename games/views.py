@@ -7,6 +7,7 @@ Publisher: Packt Publishing Ltd. - http://www.packtpub.com
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.utils import timezone
 from .models import Game
 from .serializers import GameSerializer
 from datetime import datetime
@@ -60,9 +61,9 @@ def game_detail(request, pk):
 
 		return Response(games_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-	elif request.method == 'DELETE':
-		date_now = datetime.today()
-		if date_now < game.release_date:
+	elif request.method == 'DELETE':		 
+		date_now = timezone.make_aware(datetime.now())
+		if date_now > game.release_date:
 				return Response(
 					{'detail':("the game cannot be deleted as it has already been released")},
                     status=status.HTTP_400_BAD_REQUEST)	
